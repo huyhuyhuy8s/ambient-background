@@ -413,9 +413,14 @@ Item {
 
       // OWE owns video backgrounds. This layer draws stills, and stays empty
       // behind a video so OWE's own layer shows through.
+      // The stock crop-fill rendering is kept in the tree for its load
+      // management (failure recovery, decode bookkeeping, transition
+      // finishing) but drawn at zero opacity; this plugin renders the
+      // steady-state image itself, fit to width, below.
       BackgroundMedia {
         id: base
         anchors.fill: parent
+        opacity: 0
         path: root.displayedBackground
         version: root.reloadVersion
         cached: true
@@ -431,6 +436,56 @@ Item {
             root.finishingTransition = false
             root.pruneNativeSizes()
           }
+        }
+      }
+
+      // Steady-state fit-width rendering. The image always spans the full
+      // screen width; any vertical overflow is cropped away (the window
+      // bounds clip it) and any leftover height above and below shows the
+      // ambient layer. Stays empty behind videos, which OWE draws itself.
+      Item {
+        id: steadyLayer
+        anchors.fill: parent
+        visible: root.displayedBackground !== "" && !root.isVideo(root.displayedBackground)
+
+        Image {
+          id: steadyAmbient
+          anchors.fill: parent
+          anchors.margins: -80
+          readonly property size decode: panel.decodeSize(root.displayedBackground)
+          source: decode.width > 0 ? root.imageUrl(root.displayedBackground) : ""
+          sourceSize.width: decode.width
+          sourceSize.height: decode.height
+          fillMode: Image.PreserveAspectCrop
+          asynchronous: true
+          cache: false
+          smooth: true
+          mipmap: true
+          visible: false
+        }
+
+        MultiEffect {
+          anchors.fill: parent
+          source: steadyAmbient
+          blurEnabled: true
+          blurMax: 128
+          blur: 1.0
+          brightness: -0.20
+          saturation: 1.0
+        }
+
+        Image {
+          id: steadyFrame
+          width: parent.width
+          anchors.verticalCenter: parent.verticalCenter
+          readonly property size decode: panel.decodeSize(root.displayedBackground)
+          source: decode.width > 0 ? root.imageUrl(root.displayedBackground) : ""
+          sourceSize.width: decode.width
+          fillMode: Image.PreserveAspectFit
+          asynchronous: true
+          cache: false
+          smooth: true
+          mipmap: true
         }
       }
 
@@ -466,11 +521,11 @@ Item {
 
       Image {
         id: oldFrame
-        anchors.fill: parent
+        width: parent.width
+        anchors.verticalCenter: parent.verticalCenter
         readonly property size decode: panel.decodeSize(root.oldBackground)
         source: decode.width > 0 ? root.imageUrl(root.oldBackground) : ""
         sourceSize.width: decode.width
-        sourceSize.height: decode.height
         fillMode: Image.PreserveAspectFit
         asynchronous: true
         cache: false
@@ -523,14 +578,14 @@ Item {
 
         Image {
           id: incomingFrame
-          anchors.fill: parent
+          width: parent.width
+          anchors.verticalCenter: parent.verticalCenter
           // The same URL and size as a prepared frame keeps its decoded
           // image, so a transition to it can reveal at once.
           readonly property string framePath: root.incomingBackground || root.preparedBackground
           readonly property size decode: panel.decodeSize(framePath)
           source: decode.width > 0 ? root.imageUrl(framePath) : ""
           sourceSize.width: decode.width
-          sourceSize.height: decode.height
           fillMode: Image.PreserveAspectFit
           asynchronous: true
           cache: false

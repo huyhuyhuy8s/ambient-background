@@ -13,11 +13,12 @@ is preserved on top of upstream.
 
 ## Features
 
-- **Fit-width rendering** — wallpapers keep their aspect ratio and span the
-  full screen width; no cropping, ever.
+- **Fit-width rendering** — wallpapers always span the full screen width;
+  vertical overflow is cropped, and any vertical deficit shows the ambient
+  bars instead of black.
 - **Ambient letterbox** — a heavily blurred, dimmed copy of the wallpaper
-  fills the leftover bars (applied to pre-transition, incoming and
-  steady-state frames).
+  fills the leftover bars (applied to the steady-state image, pre-transition
+  and incoming frames).
 - Everything from stock: smooth transitions with the reveal mask, video
   backgrounds, prepare/recovery pipeline for theme switches.
 
