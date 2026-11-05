@@ -554,6 +554,7 @@ Item {
           id: incomingAmbient
           anchors.fill: parent
           anchors.margins: -80
+          readonly property string framePath: root.incomingBackground || root.preparedBackground
           readonly property size decode: panel.decodeSize(framePath)
           source: decode.width > 0 ? root.imageUrl(framePath) : ""
           sourceSize.width: decode.width
