@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "thearesia.background",
+  "name": "Fit-Width Background",
+  "version": "1.0.0",
+  "author": "huyhuyhuy8s",
+  "license": "MIT",
+  "description": "Desktop background renderer that fits wallpapers edge-to-edge and fills any letterbox bars with a blurred, darkened ambient copy of the image.",
+  "kinds": [
+    "service"
+  ],
+  "entryPoints": {
+    "service": "Background.qml"
+  },
+  "omarchy": {
+    "clonedFrom": "omarchy.background"
+  }
+}
