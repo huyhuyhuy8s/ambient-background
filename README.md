@@ -25,7 +25,7 @@ is preserved on top of upstream.
 ## Install
 
 ```bash
-omarchy plugin add https://github.com/huyhuyhuy8s/thearesia-background --enable
+omarchy plugin add https://github.com/huyhuyhuy8s/ambient-background --enable
 omarchy restart shell
 ```
 
